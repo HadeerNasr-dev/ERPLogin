@@ -29,7 +29,7 @@ public class LoginTests {
                 .when()
                 .post("/api/Authenticate/Login")
                 .then()
-                .statusCode(200) // Success
+                .body("Response.IsSucceeded", equalTo(true))
                 .body("Value.Token",notNullValue()) // Ensure a token is returned
                 .body("Value.Message", equalTo(null))
                 .log().all();
@@ -46,7 +46,7 @@ public class LoginTests {
                 .when()
                 .post("/api/Authenticate/Login")
                 .then()
-                .statusCode(400) // Unauthorized
+                .body("Response.ErrorDescription", equalTo("InvalidPassword"))
                 .log().all();
     }
 
@@ -55,11 +55,13 @@ public class LoginTests {
         LoginData ghostUser = new LoginData("gepid@besenica.com", "Asd@123456", 24);
 
         given()
+                .contentType(ContentType.JSON)
                 .body(ghostUser)
+                .log().all()
                 .when()
                 .post("/api/Authenticate/Login")
                 .then()
-                .statusCode(400) // Not Found
+                .body("Response.IsSucceeded", equalTo(false))
                 .log().all();
     }
 }
