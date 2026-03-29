@@ -46,7 +46,7 @@ public class LoginTests {
                 .when()
                 .post("/api/Authenticate/Login")
                 .then()
-                .body("Response.ErrorDescription", equalTo("InvalidPassword"))
+                .body("Response.ErrorDescription", equalTo("InvalidPassword")) //Check Error message
                 .log().all();
     }
 
@@ -61,7 +61,7 @@ public class LoginTests {
                 .when()
                 .post("/api/Authenticate/Login")
                 .then()
-                .body("Response.IsSucceeded", equalTo(false))
+                .body("Response.IsSucceeded", equalTo(false)) //Check IsSucceeded key
                 .log().all();
     }
 }
