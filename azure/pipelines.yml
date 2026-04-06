@@ -1,0 +1,35 @@
+# 1. Triggered only on the master branch
+trigger:
+  - master
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+  # 2. Set up Java 17 (adjust version if your project uses 8 or 11)
+  - task: JavaToolInstaller@0
+    inputs:
+      versionSpec: '17'
+      jdkArchitectureOption: 'x64'
+      jdkSourceOption: 'PreInstalled'
+
+  # 3. Run TestNG via Maven
+  - task: Maven@4
+    inputs:
+      mavenPomFile: 'pom.xml'
+      # 'test' goal triggers the maven-surefire-plugin, which runs TestNG
+      goals: 'clean test'
+      publishJUnitResults: true
+      # TestNG results are still typically exported in JUnit format for compatibility
+      testResultsFiles: '**/surefire-reports/TEST-*.xml'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.17'
+
+  # 4. Specifically publish the TestNG report to the Azure "Tests" tab
+  - task: PublishTestResults@2
+    displayName: 'Publish TestNG Results'
+    inputs:
+      testResultsFormat: 'JUnit' # Azure reads TestNG's XML via the JUnit format
+      testResultsFiles: '**/surefire-reports/testng-results.xml'
+      mergeTestResults: true
+      failIfNoTestsRun: true
